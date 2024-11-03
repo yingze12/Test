@@ -1,0 +1,81 @@
+name: Generate PDF from Markdown
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'Skim/*.md'
+      - 'In-depth/*.md'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'Skim/*.md'
+      - 'In-depth/*.md'
+      - '!**/README.md'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  converttopdf:
+    name: Build PDF
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      
+      - name: Get the list of changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            Skim/*.md
+            In-depth/*.md
+            !**/README.md
+
+      - name: Install pandoc and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex
+       
+
+      - name: Create output directory
+        run: mkdir -p pdfs
+
+      - name: Convert Markdown to PDF
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == Skim/* || $file == In-depth/* ]]; then
+              folder=$(dirname "$file")
+              mkdir -p pdfs/$folder
+              pandoc "$file" -o "pdfs/${file%.*}.pdf" --pdf-engine=xelatex --resource-path=.:imgs
+            fi
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Generated PDFs
+          path: pdfs
+          retention-days: 7
+
+      # - name: Comment PR
+      #   uses: actions/github-script@v6
+      #   with:
+      #       github-token: ${{secrets.GITHUB_TOKEN}}
+      #       script: |
+      #         const fs = require('fs');
+      #         const pdfFiles = fs.readdirSync('./pdfs').filter(file => file.endsWith('.pdf'));
+      #         const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+      #         const fileList = pdfFiles.map(file => `* ${file}`).join('\n');
+      #         github.rest.issues.createComment({
+      #           issue_number: context.payload.pull_request.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           body: `Rough pdfs have been generated and you can download them for viewing on the Actions page (slide to the bottom to download the artificats):\n\n${fileList}\n\n[View Artifacts](${artifactUrl})`
+      #         })
+      
+
+      
