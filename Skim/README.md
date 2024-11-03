@@ -1,0 +1,6 @@
+# Skimming Papers
+## Sensor Data
+- [MultiDiffusion: Fusing Diffusion Paths for Controlled Image Generation](MultiDiffusion.md): Using a framework called MultiDiffusion to achieve controllable and diverse image generation without further training or fine-tuning.
+- [T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](T2I-Adapter.md): Aim to “dig out” the capabilities that T2I models have implicitly learned, especially the high-level structure and semantic capabilities, and then explicitly use them to control the generation more accurately.
+- [GLIGEN: Open-Set Grounded Text-to-Image Generation](GLIGEN.md): Proposing a novel approach called GLIGEN, which achieves open-world grounded text2img generation with caption and bounding box condition inputs, and the grounding ability generalizes well to novel spatial configurations and concepts.
+- [SpaText: Spatio-Textual Representation for Controllable Image Generation](SpaText.md):  A text-to-image generation method is proposed, which not only describes the entire scene with a global text prompt but also allows for more precise image generation by using free-form language descriptions for regions of interest.
